@@ -18,6 +18,8 @@ from langchain.schema import HumanMessage, AIMessage
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.runnable import RunnableMap
 from langchain.schema import StrOutputParser
+from langchain_community.chat_models import ChatDatabricks
+from langchain_community.embeddings import DatabricksEmbeddings
 
 from langchain.callbacks.base import BaseCallbackHandler
 
@@ -219,12 +221,19 @@ Answer in {language}:"""
 def load_model():
     print(f"""load_model""")
     # Get the OpenAI Chat Model
-    return ChatOpenAI(
-        temperature=0.3,
-        model='gpt-4-1106-preview',
+    return ChatDatabricks(
+        endpoint="gpt_4o_endpoint",
+        temperature=0.0,
         streaming=True,
         verbose=True
     )
+    
+    # ChatOpenAI(
+    #     temperature=0.3,
+    #     model='gpt-4-1106-preview',
+    #     streaming=True,
+    #     verbose=True
+    # )
 
 # Get the Retriever
 def load_retriever(top_k_vectorstore):
@@ -345,7 +354,8 @@ lang_dict = load_localization(language)
 def load_embedding():
     print("load_embedding")
     # Get the OpenAI Embedding
-    return OpenAIEmbeddings()
+    return DatabricksEmbeddings(endpoint="azureopenai-text-embedding-ada-002-endpoint_via_api")
+# OpenAIEmbeddings()
 
 # Cache Vector Store for future runs
 @st.cache_resource(show_spinner=lang_dict['load_vectorstore'])
